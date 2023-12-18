@@ -1,6 +1,7 @@
 import logging
 import pickle
 from pathlib import Path
+from typing import Optional, Union
 
 import numpy as np
 import tsdb
@@ -20,7 +21,7 @@ class ArtifactDataset(IterableDataset):
         artifact: Artifact,
         width: int,
         padding: str | int = "center",
-        weight: list[float] = None,
+        weight: Optional[list[float]] = None,
     ) -> None:
         """"""
         # properties
@@ -60,8 +61,8 @@ class ArtifactDataset(IterableDataset):
         sequence = self.data[i]
         # generate a window
         while True:
-            l = self.rng.integers(0, len(sequence) - self.width)
-            window = sequence[l : l + self.width]
+            length = self.rng.integers(0, len(sequence) - self.width)
+            window = sequence[length : length + self.width]
             if window.sum() > 0.01:
                 break
         # generate artifact
@@ -98,7 +99,9 @@ class ArtifactDataset(IterableDataset):
 class CachedArtifactDataset(Dataset):
     """Artifact dataset."""
 
-    def __init__(self, data: list = None, file: str | Path = None) -> None:
+    def __init__(
+        self, data: Optional[list] = None, file: Union[str, Path, None] = None
+    ) -> None:
         if data is not None:
             self.data = data
         elif file is not None:
@@ -111,7 +114,9 @@ class CachedArtifactDataset(Dataset):
         return self.data[i]
 
     @classmethod
-    def generate(cls, dataset: ArtifactDataset, n: int, to: str | Path = None) -> None:
+    def generate(
+        cls, dataset: ArtifactDataset, n: int, to: Union[str, Path, None] = None
+    ):
         data = [next(dataset) for _ in range(n)]
         if to is not None:
             pickle.dump(data, open(to, "wb"))
