@@ -1,15 +1,15 @@
 import numpy as np
 import torch
 from torch.nn import (
-    Sequential,
     Conv1d,
-    ReLU,
-    Sigmoid,
-    Tanh,
+    Dropout,
+    Embedding,
     Linear,
     Module,
-    Embedding,
-    Dropout,
+    ReLU,
+    Sequential,
+    Sigmoid,
+    Tanh,
 )
 
 activations = {
@@ -23,7 +23,7 @@ def _convolutions(
     convolution_features: list[int],
     convolution_width: int | list[int],
     convolution_dilation: int | list[int] = 1,
-    convolution_dropout: int = 0.0,
+    convolution_dropout: int = 0,
     activation: str = "sigmoid",
     last: bool = True,
     pad: bool = False,

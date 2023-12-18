@@ -1,8 +1,7 @@
 from lightning.pytorch import LightningModule
 from lightning.pytorch.utilities import grad_norm
 from modeling import SinusoidalPositionEmbedding, _convolutions, _linear
-from torch.nn import (Dropout, Linear, TransformerEncoder,
-                      TransformerEncoderLayer)
+from torch.nn import Dropout, Linear, TransformerEncoder, TransformerEncoderLayer
 from torch.nn.functional import mse_loss
 from torch.optim import Adam, AdamW
 from torch.optim.lr_scheduler import ReduceLROnPlateau
@@ -83,7 +82,7 @@ class ConvolutionDetector(LightningModule):
 
 class WindowTransformerDetector(LightningModule):
     """Use convolutional layers to extract features, then use them
-       in a transformer block"""
+    in a transformer block"""
 
     def __init__(
         self,
@@ -187,14 +186,14 @@ class WindowTransformerDetector(LightningModule):
                 "monitor": "validation",
             },
         }
-    
+
     def on_before_optimizer_step(self, _):
         self.log_dict(grad_norm(self, norm_type=2))
 
 
 class WindowLinearDetector(LightningModule):
     """Use convolutional layers to extract features, then use them
-       in a dense block"""
+    in a dense block"""
 
     def __init__(
         self,
@@ -203,7 +202,7 @@ class WindowLinearDetector(LightningModule):
         convolution_width: list[int],
         convolution_dropout: float,
         linear_dropout: float = 0,
-        linear_layers: list[int] = None,
+        linear_layers: list[int] | None = None,
         loss: str = "mask",
         loss_boost_fp: float = 0.0,
     ):
@@ -223,9 +222,9 @@ class WindowLinearDetector(LightningModule):
         self.dropout = Dropout(linear_dropout)
         # final linear block to convert each
         # feature to a single value
-        self.linear = _linear([convolution_features[-1] * window,
-                               *(linear_layers or list()),
-                               window])
+        self.linear = _linear(
+            [convolution_features[-1] * window, *(linear_layers or list()), window]
+        )
 
     def forward(self, x):
         """
@@ -280,6 +279,6 @@ class WindowLinearDetector(LightningModule):
                 "monitor": "validation",
             },
         }
-    
+
     def on_before_optimizer_step(self, _):
         self.log_dict(grad_norm(self, norm_type=2))
