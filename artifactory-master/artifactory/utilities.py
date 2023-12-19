@@ -1,6 +1,5 @@
 from math import floor, log
 from pathlib import Path
-from typing import Any, Dict
 
 import matplotlib.pyplot as plt
 import torch
@@ -17,10 +16,7 @@ class TrainerCallback(Callback):
 
     """
 
-    def on_save_checkpoint(self,
-                           trainer: Trainer,
-                           pl_module: LightningModule,
-                           checkpoint: Dict[str, Any]) -> None:
+    def on_save_checkpoint(self, trainer: Trainer, pl_module: LightningModule) -> None:
         if not hasattr(pl_module, "trains"):
             return
         folder = Path(trainer.log_dir) / "models"
@@ -28,14 +24,12 @@ class TrainerCallback(Callback):
         for train in pl_module.trains:
             model = getattr(pl_module, train)
             param = getattr(model, "hparams")
-            torch.save({ "hparams": param,
-                         "state": model.state_dict()},
-                       folder / f"{train}.pt")
+            torch.save(
+                {"hparams": param, "state": model.state_dict()}, folder / f"{train}.pt"
+            )
 
 
-def plot(artifact: dict,
-         extra = None,
-         extra_label = None) -> None:
+def plot(artifact: dict, extra=None, extra_label=None) -> None:
     plt.figure(figsize=(20, 10))
     plt.plot(artifact["data"] + artifact["artifact"], label="data")
     plt.plot(artifact["artifact"], label="artifact")
@@ -53,7 +47,7 @@ def parameters(model):
 
 def parameters_k(model):
     number = parameters(model)
-    units = ['', 'K', 'M', 'G', 'T', 'P']
+    units = ["", "K", "M", "G", "T", "P"]
     k = 1000.0
     magnitude = int(floor(log(number, k)))
     return f"{number / k**magnitude:.2f}{units[magnitude]}"
