@@ -22,4 +22,4 @@ COPY poetry.lock pyproject.toml ./
 RUN poetry install
 
 # Install packages
-RUN pip install numpy lightning tsdb matplotlib azureml azureml.core 
+RUN pip install 'numpy' 'lightning' 'tsdb' 'matplotlib' 'azureml' 'azureml.core' 'azure-ai-ml' 'azure-identity' 'azureml.mlflow'
