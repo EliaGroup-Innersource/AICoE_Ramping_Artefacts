@@ -6,17 +6,33 @@
       "ghcr.io/devcontainers/features/docker-in-docker":"latest",
       "ghcr.io/devcontainers/features/azure-cli":"latest",
       "ghcr.io/devcontainers/features/nvidia-cuda:1": {
-      "installCudnn": true
-       }
+         "installCudnn": true,
+         "cudaVersion": "11.8",
+         "cudnnVersion": "8.6.0.163"
+      },
+      "ghcr.io/devcontainers/features/azure-cli:1": {
+         "version": "latest"
+      },
+      "ghcr.io/devcontainers/features/docker-in-docker:2": {
+         "moby": true,
+         "azureDnsAutoDetection": true,
+         "installDockerBuildx": true,
+         "version": "latest",
+         "dockerDashComposeVersion": "v1"
+      }
    },
    "customizations":{
       "vscode":{
          "extensions":[
             "ms-toolsai.jupyter",
             "ms-python.python",
+            "ms-python.pylance",
             "ms-toolsai.vscode-ai"
          ]
       }
    },
-   "onCreateCommand":"./.devcontainer/onCreateCommand.sh"
+   "onCreateCommand": [
+      "./.devcontainer/onCreateCommand.sh",
+      "az extension add -n ml -y"
+   ]
 }
