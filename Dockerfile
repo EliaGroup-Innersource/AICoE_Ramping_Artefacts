@@ -1,25 +1,5 @@
-FROM python:3.11.4-bullseye
+FROM mcr.microsoft.com/azureml/openmpi4.1.0-cuda11.8-cudnn8-ubuntu22.04
 
-# Declare environment variables
-ENV PATH="/root/.local/bin:$PATH"
+COPY ./conda.yml ./
 
-# Install Poetry
-RUN apt-get -qq update && apt-get -qq -y install curl\
-    && curl -sSL https://install.python-poetry.org | python3 - \
-    && poetry config virtualenvs.create false \
-    && apt-get -qq -y remove curl \
-    && apt-get -qq -y autoremove \
-    && apt-get autoclean \
-    && rm -rf /var/lib/apt/lists/* /var/log/dpkg.log
-
-# Set the working directory \
-WORKDIR /app
-
-# Copy dependencies
-COPY poetry.lock pyproject.toml ./
-
-# Install dependencies
-RUN poetry install
-
-# Install packages
-RUN pip install 'numpy' 'lightning' 'tsdb' 'matplotlib' 'azureml' 'azureml.core' 'azure-ai-ml' 'azure-identity' 'azureml.mlflow'
+RUN conda env update -n base -f ./conda.yml
